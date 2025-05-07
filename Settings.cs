@@ -9,7 +9,7 @@ namespace MouseHighlighter
     {
         public Color CursorColor { get; set; } = Color.Yellow;
         public Color ClickColor { get; set; } = Color.Red;
-        public float Opacity { get; set; } = 0.5f;
+        public int Thickness { get; set; } = 3;
         public int CircleSize { get; set; } = 30;
 
         private static string SettingsPath => Path.Combine(
@@ -29,15 +29,57 @@ namespace MouseHighlighter
 
                 if (File.Exists(SettingsPath))
                 {
-                    string json = File.ReadAllText(SettingsPath);
-                    var settingsData = JsonSerializer.Deserialize<SettingsData>(json);
-                    return new Settings
+                    try 
                     {
-                        CursorColor = Color.FromArgb(settingsData.CursorColorArgb),
-                        ClickColor = Color.FromArgb(settingsData.ClickColorArgb),
-                        Opacity = settingsData.Opacity,
-                        CircleSize = settingsData.CircleSize
-                    };
+                        string json = File.ReadAllText(SettingsPath);
+                        var settings = new Settings();
+                        
+                        // Handle versioning differences
+                        try 
+                        {
+                            // Try to deserialize directly first
+                            var settingsData = JsonSerializer.Deserialize<SettingsData>(json);
+                            settings.CursorColor = Color.FromArgb(settingsData.CursorColorArgb);
+                            settings.ClickColor = Color.FromArgb(settingsData.ClickColorArgb);
+                            settings.CircleSize = settingsData.CircleSize;
+                            
+                            // Check if we have the new thickness property
+                            if (json.Contains("\"Thickness\":"))
+                            {
+                                settings.Thickness = settingsData.Thickness;
+                            }
+                            // Handle old opacity format by converting to a reasonable thickness
+                            else if (json.Contains("\"Opacity\":"))
+                            {
+                                // Get opacity directly from JsonElement to handle type changes
+                                var options = new JsonDocumentOptions { AllowTrailingCommas = true };
+                                using (JsonDocument document = JsonDocument.Parse(json, options))
+                                {
+                                    if (document.RootElement.TryGetProperty("Opacity", out JsonElement opacityElement))
+                                    {
+                                        if (opacityElement.ValueKind == JsonValueKind.Number)
+                                        {
+                                            float opacity = opacityElement.GetSingle();
+                                            // Convert opacity to a reasonable thickness (1-10)
+                                            settings.Thickness = Math.Max(1, Math.Min(10, (int)(opacity * 10) + 1));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If anything goes wrong with conversion, use defaults
+                            settings = new Settings();
+                        }
+                        
+                        return settings;
+                    }
+                    catch
+                    {
+                        // If anything goes wrong with file reading, use defaults
+                        return new Settings();
+                    }
                 }
             }
             catch
@@ -56,7 +98,7 @@ namespace MouseHighlighter
                 {
                     CursorColorArgb = CursorColor.ToArgb(),
                     ClickColorArgb = ClickColor.ToArgb(),
-                    Opacity = Opacity,
+                    Thickness = Thickness,
                     CircleSize = CircleSize
                 };
 
@@ -74,7 +116,7 @@ namespace MouseHighlighter
         {
             public int CursorColorArgb { get; set; }
             public int ClickColorArgb { get; set; }
-            public float Opacity { get; set; }
+            public int Thickness { get; set; }
             public int CircleSize { get; set; }
         }
     }

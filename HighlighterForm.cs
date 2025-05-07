@@ -86,9 +86,9 @@ namespace MouseHighlighter
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            // Use a pen for outline instead of a filled brush
+            // Use a pen for outline with custom thickness
             using (var pen = new Pen(isClicking ? settings.ClickColor : settings.CursorColor, 
-                Math.Max(1, settings.CircleSize / 10))) // Adjust pen thickness proportional to size
+                settings.Thickness))
             {
                 // Draw a circle outline
                 e.Graphics.DrawEllipse(
@@ -127,12 +127,12 @@ namespace MouseHighlighter
         }
         private void ShowSettings()
         {
-            var settingsForm = new ColorSettingsForm(settings.CursorColor, settings.ClickColor, settings.Opacity, settings.CircleSize);
+            var settingsForm = new ColorSettingsForm(settings.CursorColor, settings.ClickColor, settings.Thickness, settings.CircleSize);
             settingsForm.SettingsChanged += (s, settings) =>
             {
                 this.settings.CursorColor = settings.CursorColor;
                 this.settings.ClickColor = settings.ClickColor;
-                this.settings.Opacity = settings.Opacity;
+                this.settings.Thickness = settings.Thickness;
                 this.settings.CircleSize = settings.Size;
                 this.settings.Save();
                 this.Invalidate();

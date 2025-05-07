@@ -15,7 +15,7 @@ namespace MouseHighlighter
 
         public event EventHandler<ColorSettings> SettingsChanged;
 
-        public ColorSettingsForm(Color currentCursorColor, Color currentClickColor, float currentOpacity, int currentSize)
+        public ColorSettingsForm(Color currentCursorColor, Color currentClickColor, int currentThickness, int currentSize)
         {
             this.Text = "Mouse Highlighter Settings";
             this.Size = new Size(400, 400);
@@ -72,10 +72,10 @@ namespace MouseHighlighter
 
             colorGroupBox.Controls.AddRange(new Control[] { cursorLabel, cursorColorButton, clickLabel, clickColorButton });
 
-            // Opacity section
-            var opacityGroupBox = new GroupBox
+            // Thickness section
+            var thicknessGroupBox = new GroupBox
             {
-                Text = "Transparency",
+                Text = "Ring Thickness",
                 Dock = DockStyle.None,
                 Height = 80,
                 Padding = new Padding(10),
@@ -85,7 +85,7 @@ namespace MouseHighlighter
 
             opacityLabel = new Label
             {
-                Text = "Opacity: " + (currentOpacity * 100).ToString("0") + "%",
+                Text = "Thickness: " + currentThickness + "px",
                 AutoSize = true,
                 Location = new Point(10, 30)
             };
@@ -95,18 +95,18 @@ namespace MouseHighlighter
                 Location = new Point(10, 50),
                 Width = 340,
                 Minimum = 1,
-                Maximum = 100,
-                Value = (int)(currentOpacity * 100),
-                TickFrequency = 10,
+                Maximum = 10,
+                Value = currentThickness,
+                TickFrequency = 1,
                 TickStyle = TickStyle.BottomRight
             };
             opacityTrackBar.ValueChanged += (s, e) =>
             {
-                opacityLabel.Text = "Opacity: " + opacityTrackBar.Value.ToString() + "%";
+                opacityLabel.Text = "Thickness: " + opacityTrackBar.Value.ToString() + "px";
                 NotifySettingsChanged();
             };
 
-            opacityGroupBox.Controls.AddRange(new Control[] { opacityLabel, opacityTrackBar });
+            thicknessGroupBox.Controls.AddRange(new Control[] { opacityLabel, opacityTrackBar });
 
             // Size controls
             var sizeGroupBox = new GroupBox
@@ -175,7 +175,7 @@ namespace MouseHighlighter
             this.Controls.AddRange(new Control[] 
             { 
                 colorGroupBox,
-                opacityGroupBox,
+                thicknessGroupBox,
                 sizeGroupBox,
                 buttonPanel
             });
@@ -203,7 +203,7 @@ namespace MouseHighlighter
             SettingsChanged?.Invoke(this, new ColorSettings(
                 cursorColorButton.BackColor,
                 clickColorButton.BackColor,
-                opacityTrackBar.Value / 100f,
+                opacityTrackBar.Value,
                 sizeTrackBar.Value
             ));
         }
@@ -213,14 +213,14 @@ namespace MouseHighlighter
     {
         public Color CursorColor { get; }
         public Color ClickColor { get; }
-        public float Opacity { get; }
+        public int Thickness { get; }
         public int Size { get; }
 
-        public ColorSettings(Color cursorColor, Color clickColor, float opacity, int size)
+        public ColorSettings(Color cursorColor, Color clickColor, int thickness, int size)
         {
             CursorColor = cursorColor;
             ClickColor = clickColor;
-            Opacity = opacity;
+            Thickness = thickness;
             Size = size;
         }
     }
