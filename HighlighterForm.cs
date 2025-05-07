@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
+using Microsoft.Win32;
 
 namespace MouseHighlighter
 {
@@ -26,7 +27,16 @@ namespace MouseHighlighter
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.TransparencyKey = BackColor;
-            this.WindowState = FormWindowState.Maximized;
+
+            // Set up form to cover all screens
+            Rectangle virtualScreen = SystemInformation.VirtualScreen;
+            this.StartPosition = FormStartPosition.Manual;
+            this.Location = new Point(virtualScreen.X, virtualScreen.Y);
+            this.Size = new Size(virtualScreen.Width, virtualScreen.Height);
+
+            // Handle DPI changes and monitor configuration changes
+            this.DpiChanged += (s, e) => UpdateFormBounds();
+            SystemEvents.DisplaySettingsChanged += (s, e) => UpdateFormBounds();
 
             // Make the form click-through
             int initialStyle = GetWindowLong(this.Handle, -20);
@@ -117,6 +127,22 @@ namespace MouseHighlighter
                 this.Invalidate();
             };
             settingsForm.ShowDialog();
+        }
+        private void UpdateFormBounds()
+        {
+            // Update form bounds to cover all screens
+            Rectangle virtualScreen = SystemInformation.VirtualScreen;
+            this.Location = new Point(virtualScreen.X, virtualScreen.Y);
+            this.Size = new Size(virtualScreen.Width, virtualScreen.Height);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                SystemEvents.DisplaySettingsChanged -= (s, e) => UpdateFormBounds();
+            }
+            base.Dispose(disposing);
         }
     }
 }
