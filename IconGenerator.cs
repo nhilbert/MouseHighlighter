@@ -21,20 +21,20 @@ namespace MouseHighlighter
                 // Clear background (transparent)
                 g.Clear(Color.Transparent);
 
-                // Draw glow effect
+                // Background glow effect
                 using (var path = new System.Drawing.Drawing2D.GraphicsPath())
                 {
-                    path.AddEllipse(2, 2, size - 4, size - 4);
+                    path.AddEllipse(1, 1, size - 2, size - 2);
                     using (var glow = new System.Drawing.Drawing2D.PathGradientBrush(path))
                     {
-                        glow.CenterColor = Color.FromArgb(180, Color.Yellow);
-                        glow.SurroundColors = new Color[] { Color.FromArgb(0, Color.Yellow) };
+                        glow.CenterColor = Color.FromArgb(255, 255, 200, 0); // Bright orange-yellow
+                        glow.SurroundColors = new Color[] { Color.FromArgb(0, Color.Orange) };
                         g.FillPath(glow, path);
                     }
                 }
 
                 // Draw cursor
-                int cursorSize = (int)(size * 0.6); // Slightly smaller cursor
+                int cursorSize = (int)(size * 0.65); // Slightly larger cursor
                 int offset = (size - cursorSize) / 2;
                 
                 // Create cursor shape
@@ -46,28 +46,38 @@ namespace MouseHighlighter
                 };
 
                 // Draw cursor shadow
-                Point[] shadowPoints = cursorPoints.Select(p => new Point(p.X + 1, p.Y + 1)).ToArray();
-                using (var shadowBrush = new SolidBrush(Color.FromArgb(80, Color.Black)))
+                Point[] shadowPoints = cursorPoints.Select(p => new Point(p.X + 2, p.Y + 2)).ToArray();
+                using (var shadowBrush = new SolidBrush(Color.FromArgb(100, Color.Black)))
                 {
                     g.FillPolygon(shadowBrush, shadowPoints);
                 }
 
-                // Draw cursor outline and fill
-                using (var pen = new Pen(Color.FromArgb(64, 64, 64), 1.5f))
+                // Draw cursor with strong outline
+                using (var outlinePen = new Pen(Color.Black, 2f))
                 using (var brush = new SolidBrush(Color.White))
                 {
                     g.FillPolygon(brush, cursorPoints);
-                    g.DrawPolygon(pen, cursorPoints);
+                    g.DrawPolygon(outlinePen, cursorPoints);
                 }
 
-                // Draw highlight ring
-                int ringSize = (int)(size * 0.7);
-                int ringOffset = (size - ringSize) / 2;
-                using (var pen = new Pen(Color.FromArgb(255, 220, 0), 2))
+                // Draw outer highlight ring
+                int outerRingSize = (int)(size * 0.8);
+                int outerRingOffset = (size - outerRingSize) / 2;
+                using (var outerPen = new Pen(Color.FromArgb(255, 255, 165, 0), 2.5f)) // Orange
                 {
-                    pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                    pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                    g.DrawEllipse(pen, ringOffset, ringOffset, ringSize, ringSize);
+                    outerPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                    outerPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                    g.DrawEllipse(outerPen, outerRingOffset, outerRingOffset, outerRingSize, outerRingSize);
+                }
+
+                // Draw inner highlight ring
+                int innerRingSize = (int)(size * 0.65);
+                int innerRingOffset = (size - innerRingSize) / 2;
+                using (var innerPen = new Pen(Color.FromArgb(255, 255, 215, 0), 1.5f)) // Gold
+                {
+                    innerPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                    innerPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                    g.DrawEllipse(innerPen, innerRingOffset, innerRingOffset, innerRingSize, innerRingSize);
                 }
 
                 // Convert to icon
