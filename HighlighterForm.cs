@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace MouseHighlighter
 {
@@ -42,9 +43,13 @@ namespace MouseHighlighter
 
         private void CreateTrayIcon()
         {
+            // Generate and save the icon
+            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+            IconGenerator.SaveIconToFile(iconPath);
+
             var trayIcon = new NotifyIcon
             {
-                Icon = SystemIcons.Application,
+                Icon = new Icon(iconPath),
                 Text = "Mouse Highlighter",
                 Visible = true
             };
