@@ -18,7 +18,7 @@ namespace MouseHighlighter
         public ColorSettingsForm(Color currentCursorColor, Color currentClickColor, int currentThickness, int currentSize)
         {
             this.Text = "Mouse Highlighter Settings";
-            this.Size = new Size(400, 400);
+            this.Size = new Size(800, 400);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -33,7 +33,7 @@ namespace MouseHighlighter
                 Height = 80,
                 Padding = new Padding(10),
                 Location = new Point(10, 10),
-                Width = 365
+                Width = 740
             };
 
             var cursorLabel = new Label
@@ -47,7 +47,7 @@ namespace MouseHighlighter
             {
                 Width = 80,
                 Height = 30,
-                Location = new Point(100, 25),
+                Location = new Point(250, 25),
                 BackColor = currentCursorColor,
                 FlatStyle = FlatStyle.Flat
             };
@@ -57,14 +57,14 @@ namespace MouseHighlighter
             {
                 Text = "Click Color:",
                 AutoSize = true,
-                Location = new Point(200, 25)
+                Location = new Point(520, 25)
             };
 
             clickColorButton = new Button
             {
                 Width = 80,
                 Height = 30,
-                Location = new Point(290, 25),
+                Location = new Point(670, 25),
                 BackColor = currentClickColor,
                 FlatStyle = FlatStyle.Flat
             };
@@ -80,7 +80,7 @@ namespace MouseHighlighter
                 Height = 80,
                 Padding = new Padding(10),
                 Location = new Point(10, 100),
-                Width = 365
+                Width = 740
             };
 
             opacityLabel = new Label
@@ -93,7 +93,7 @@ namespace MouseHighlighter
             opacityTrackBar = new TrackBar
             {
                 Location = new Point(10, 50),
-                Width = 340,
+                Width = 650,
                 Minimum = 1,
                 Maximum = 10,
                 Value = currentThickness,
@@ -116,7 +116,7 @@ namespace MouseHighlighter
                 Height = 80,
                 Padding = new Padding(10),
                 Location = new Point(10, 190),
-                Width = 365
+                Width = 740
             };
 
             sizeLabel = new Label
@@ -129,7 +129,7 @@ namespace MouseHighlighter
             sizeTrackBar = new TrackBar
             {
                 Location = new Point(10, 50),
-                Width = 340,
+                Width = 650,
                 Minimum = 10,
                 Maximum = 100,
                 Value = currentSize,
@@ -148,14 +148,15 @@ namespace MouseHighlighter
             var buttonPanel = new Panel
             {
                 Height = 40,
-                Dock = DockStyle.Bottom
+                Dock = DockStyle.Bottom,
+                Width = 950
             };
 
             var cancelButton = new Button
             {
                 Text = "Cancel",
                 DialogResult = DialogResult.Cancel,
-                Location = new Point(125, 10),
+                Location = new Point(400, 10),
                 Width = 100,
                 Height = 30
             };
@@ -164,8 +165,8 @@ namespace MouseHighlighter
             {
                 Text = "Apply and Close",
                 DialogResult = DialogResult.OK,
-                Location = new Point(235, 10),
-                Width = 120,
+                Location = new Point(550, 10),
+                Width = 180,
                 Height = 30
             };
             applyButton.Click += (s, e) => this.Close();
