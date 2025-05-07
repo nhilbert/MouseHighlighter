@@ -1,0 +1,15 @@
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.csproj.AssemblyReference.cache
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.AssemblyInfoInputs.cache
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.AssemblyInfo.cs
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.csproj.CoreCompileInputs.cache
+C:\Users\norma\Development\MouseHighlighter\bin\Debug\net6.0-windows\MouseHighlighter.exe
+C:\Users\norma\Development\MouseHighlighter\bin\Debug\net6.0-windows\MouseHighlighter.deps.json
+C:\Users\norma\Development\MouseHighlighter\bin\Debug\net6.0-windows\MouseHighlighter.runtimeconfig.json
+C:\Users\norma\Development\MouseHighlighter\bin\Debug\net6.0-windows\MouseHighlighter.dll
+C:\Users\norma\Development\MouseHighlighter\bin\Debug\net6.0-windows\MouseHighlighter.pdb
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.dll
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\refint\MouseHighlighter.dll
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.pdb
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\MouseHighlighter.genruntimeconfig.cache
+C:\Users\norma\Development\MouseHighlighter\obj\Debug\net6.0-windows\ref\MouseHighlighter.dll
