@@ -9,61 +9,78 @@ namespace MouseHighlighter
         private readonly Button cursorColorButton;
         private readonly Button clickColorButton;
         private readonly TrackBar opacityTrackBar;
+        private readonly TrackBar sizeTrackBar;
         private readonly Label opacityLabel;
+        private readonly Label sizeLabel;
 
         public event EventHandler<ColorSettings> SettingsChanged;
 
-        public ColorSettingsForm(Color currentCursorColor, Color currentClickColor, float currentOpacity)
+        public ColorSettingsForm(Color currentCursorColor, Color currentClickColor, float currentOpacity, int currentSize)
         {
             this.Text = "Mouse Highlighter Settings";
-            this.Size = new Size(400, 300);
+            this.Size = new Size(400, 400);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Padding = new Padding(20);
+            this.Padding = new Padding(10);
 
             // Color section
             var colorGroupBox = new GroupBox
             {
                 Text = "Colors",
-                Dock = DockStyle.Top,
-                Height = 120,
-                Padding = new Padding(10)
+                Dock = DockStyle.None,
+                Height = 80,
+                Padding = new Padding(10),
+                Location = new Point(10, 10),
+                Width = 365
+            };
+
+            var cursorLabel = new Label
+            {
+                Text = "Cursor Color:",
+                AutoSize = true,
+                Location = new Point(10, 30)
             };
 
             cursorColorButton = new Button
             {
-                Text = "Cursor Color",
-                Width = 150,
+                Width = 80,
                 Height = 30,
-                Location = new Point(10, 30),
+                Location = new Point(100, 25),
                 BackColor = currentCursorColor,
                 FlatStyle = FlatStyle.Flat
             };
             cursorColorButton.Click += (s, e) => ChooseColor(cursorColorButton);
 
+            var clickLabel = new Label
+            {
+                Text = "Click Color:",
+                AutoSize = true,
+                Location = new Point(200, 25)
+            };
+
             clickColorButton = new Button
             {
-                Text = "Click Color",
-                Width = 150,
+                Width = 80,
                 Height = 30,
-                Location = new Point(180, 30),
+                Location = new Point(290, 25),
                 BackColor = currentClickColor,
                 FlatStyle = FlatStyle.Flat
             };
             clickColorButton.Click += (s, e) => ChooseColor(clickColorButton);
 
-            colorGroupBox.Controls.AddRange(new Control[] { cursorColorButton, clickColorButton });
+            colorGroupBox.Controls.AddRange(new Control[] { cursorLabel, cursorColorButton, clickLabel, clickColorButton });
 
             // Opacity section
             var opacityGroupBox = new GroupBox
             {
                 Text = "Transparency",
-                Dock = DockStyle.Top,
-                Height = 100,
+                Dock = DockStyle.None,
+                Height = 80,
                 Padding = new Padding(10),
-                Top = 130
+                Location = new Point(10, 100),
+                Width = 365
             };
 
             opacityLabel = new Label
@@ -91,6 +108,42 @@ namespace MouseHighlighter
 
             opacityGroupBox.Controls.AddRange(new Control[] { opacityLabel, opacityTrackBar });
 
+            // Size controls
+            var sizeGroupBox = new GroupBox
+            {
+                Text = "Circle Size",
+                Dock = DockStyle.None,
+                Height = 80,
+                Padding = new Padding(10),
+                Location = new Point(10, 190),
+                Width = 365
+            };
+
+            sizeLabel = new Label
+            {
+                Text = "Size: " + currentSize.ToString() + "px",
+                AutoSize = true,
+                Location = new Point(10, 30)
+            };
+
+            sizeTrackBar = new TrackBar
+            {
+                Location = new Point(10, 50),
+                Width = 340,
+                Minimum = 10,
+                Maximum = 100,
+                Value = currentSize,
+                TickFrequency = 10,
+                TickStyle = TickStyle.BottomRight
+            };
+            sizeTrackBar.ValueChanged += (s, e) =>
+            {
+                sizeLabel.Text = "Size: " + sizeTrackBar.Value.ToString() + "px";
+                NotifySettingsChanged();
+            };
+
+            sizeGroupBox.Controls.AddRange(new Control[] { sizeLabel, sizeTrackBar });
+
             // Button section
             var buttonPanel = new Panel
             {
@@ -98,40 +151,50 @@ namespace MouseHighlighter
                 Dock = DockStyle.Bottom
             };
 
+            var cancelButton = new Button
+            {
+                Text = "Cancel",
+                DialogResult = DialogResult.Cancel,
+                Location = new Point(125, 10),
+                Width = 100,
+                Height = 30
+            };
+
             var applyButton = new Button
             {
                 Text = "Apply and Close",
-                Width = 120,
-                Height = 30,
                 DialogResult = DialogResult.OK,
-                Anchor = AnchorStyles.Right
+                Location = new Point(235, 10),
+                Width = 120,
+                Height = 30
             };
-            applyButton.Location = new Point(buttonPanel.Width - applyButton.Width - 10, 5);
             applyButton.Click += (s, e) => this.Close();
 
-            buttonPanel.Controls.Add(applyButton);
+            buttonPanel.Controls.AddRange(new Control[] { cancelButton, applyButton });
 
             this.Controls.AddRange(new Control[] 
             { 
                 colorGroupBox,
                 opacityGroupBox,
+                sizeGroupBox,
                 buttonPanel
             });
         }
 
         private void ChooseColor(Button button)
         {
-            using (var colorDialog = new ColorDialog
+            using var dialog = new ColorDialog
             {
                 Color = button.BackColor,
-                FullOpen = true
-            })
+                FullOpen = true,
+                AnyColor = true,
+                SolidColorOnly = true
+            };
+
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                if (colorDialog.ShowDialog() == DialogResult.OK)
-                {
-                    button.BackColor = colorDialog.Color;
-                    NotifySettingsChanged();
-                }
+                button.BackColor = dialog.Color;
+                NotifySettingsChanged();
             }
         }
 
@@ -140,7 +203,8 @@ namespace MouseHighlighter
             SettingsChanged?.Invoke(this, new ColorSettings(
                 cursorColorButton.BackColor,
                 clickColorButton.BackColor,
-                opacityTrackBar.Value / 100f
+                opacityTrackBar.Value / 100f,
+                sizeTrackBar.Value
             ));
         }
     }
@@ -150,12 +214,14 @@ namespace MouseHighlighter
         public Color CursorColor { get; }
         public Color ClickColor { get; }
         public float Opacity { get; }
+        public int Size { get; }
 
-        public ColorSettings(Color cursorColor, Color clickColor, float opacity)
+        public ColorSettings(Color cursorColor, Color clickColor, float opacity, int size)
         {
             CursorColor = cursorColor;
             ClickColor = clickColor;
             Opacity = opacity;
+            Size = size;
         }
     }
 }

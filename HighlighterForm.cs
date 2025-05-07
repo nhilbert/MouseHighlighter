@@ -10,18 +10,17 @@ namespace MouseHighlighter
     public class HighlighterForm : Form
     {
         private readonly System.Windows.Forms.Timer cursorTimer = new System.Windows.Forms.Timer();
-        private readonly int circleSize = 30;
+        private Settings settings;
         private Point lastPosition = Cursor.Position;
         private bool isClicking = false;
-        private Color highlightColor = Color.Yellow;
-        private Color clickColor = Color.Red;
-        private float opacity = 0.5f;
 
         [DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int vKey);
 
         public HighlighterForm()
         {
+            // Load settings
+            settings = Settings.Load();
             // Form settings
             this.FormBorderStyle = FormBorderStyle.None;
             this.ShowInTaskbar = false;
@@ -88,15 +87,15 @@ namespace MouseHighlighter
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             using (var brush = new SolidBrush(Color.FromArgb(
-                (int)(255 * opacity),
-                isClicking ? clickColor : highlightColor)))
+                (int)(255 * settings.Opacity),
+                isClicking ? settings.ClickColor : settings.CursorColor)))
             {
                 e.Graphics.FillEllipse(
                     brush,
-                    lastPosition.X - circleSize / 2,
-                    lastPosition.Y - circleSize / 2,
-                    circleSize,
-                    circleSize);
+                    lastPosition.X - settings.CircleSize / 2,
+                    lastPosition.Y - settings.CircleSize / 2,
+                    settings.CircleSize,
+                    settings.CircleSize);
             }
         }
 
@@ -118,12 +117,14 @@ namespace MouseHighlighter
         }
         private void ShowSettings()
         {
-            var settingsForm = new ColorSettingsForm(highlightColor, clickColor, opacity);
+            var settingsForm = new ColorSettingsForm(settings.CursorColor, settings.ClickColor, settings.Opacity, settings.CircleSize);
             settingsForm.SettingsChanged += (s, settings) =>
             {
-                highlightColor = settings.CursorColor;
-                clickColor = settings.ClickColor;
-                opacity = settings.Opacity;
+                this.settings.CursorColor = settings.CursorColor;
+                this.settings.ClickColor = settings.ClickColor;
+                this.settings.Opacity = settings.Opacity;
+                this.settings.CircleSize = settings.Size;
+                this.settings.Save();
                 this.Invalidate();
             };
             settingsForm.ShowDialog();
