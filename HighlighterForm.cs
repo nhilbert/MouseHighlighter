@@ -86,16 +86,26 @@ namespace MouseHighlighter
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-            using (var brush = new SolidBrush(Color.FromArgb(
-                (int)(255 * settings.Opacity),
-                isClicking ? settings.ClickColor : settings.CursorColor)))
+            // Use a pen for outline instead of a filled brush
+            using (var pen = new Pen(isClicking ? settings.ClickColor : settings.CursorColor, 
+                Math.Max(1, settings.CircleSize / 10))) // Adjust pen thickness proportional to size
             {
-                e.Graphics.FillEllipse(
-                    brush,
+                // Draw a circle outline
+                e.Graphics.DrawEllipse(
+                    pen,
                     lastPosition.X - settings.CircleSize / 2,
                     lastPosition.Y - settings.CircleSize / 2,
                     settings.CircleSize,
                     settings.CircleSize);
+                
+                // Add a second inner circle for visual effect
+                int innerSize = (int)(settings.CircleSize * 0.7f);
+                e.Graphics.DrawEllipse(
+                    pen,
+                    lastPosition.X - innerSize / 2,
+                    lastPosition.Y - innerSize / 2,
+                    innerSize,
+                    innerSize);
             }
         }
 
